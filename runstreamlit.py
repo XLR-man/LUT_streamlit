@@ -40,4 +40,4 @@ my_upload = st.sidebar.file_uploader("Upload an image", type=["png", "jpg", "jpe
 if my_upload is not None:
     fix_image(upload=my_upload)
 else:
-    fix_image("./demo_images/sRGB/a1629.jpg")
+    fix_image("https://github.com/XLR-man/LUT_streamlit/tree/master/demo_images/sRGB/a1629.jpg")
