@@ -41,9 +41,3 @@ st.sidebar.write("## Upload and download :gear:")
 #     fix_image(upload=my_upload)
 # else:
 #     fix_image("./demo_images/sRGB/a1629.jpg")
-
-st.write("## Enhance your low light image")
-st.write(
-    ":dog: Try uploading an image to watch the enhanced image. Full quality images can be downloaded from the sidebar.:grin:"
-)
-st.sidebar.write("## Upload and download :gear:")
