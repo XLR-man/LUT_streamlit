@@ -1,3 +1,4 @@
+import streamlit as st
 import subprocess
 import sys
 import torch
@@ -7,13 +8,13 @@ if torch.cuda.is_available():
     subprocess.check_call([sys.executable, 'setup.py', 'install'])
 else:
     print('NO CUDA is found. Fall back to CPU.')
-st.set_page_config(layout="wide", page_title="Low Light Image Enhancement")
 
-st.write("## Enhance your low light dsaimageh")
 from setuptools import setup
 import torch
 from torch.utils.cpp_extension import BuildExtension, CUDAExtension, CppExtension
+st.set_page_config(layout="wide", page_title="Low Light Image Enhancement")
 
+st.write("## Enhance your low light dsaimageh")
 if torch.cuda.is_available():
     print('Including CUDA code.')
     setup(
@@ -33,7 +34,6 @@ else:
         ext_modules=[CppExtension('trilinear', ['src/trilinear.cpp'])],
         cmdclass={'build_ext': BuildExtension})
 
-import streamlit as st
 # import image_adaptive_lut_evaluation
 import time
 
