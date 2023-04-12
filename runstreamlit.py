@@ -9,127 +9,127 @@ import time
 from torchvision.utils import save_image
 from torch.utils.data import DataLoader
 import torch.nn.functional as F
-st.set_page_config(layout="wide", page_title="Low Light Image Enhancement")
-st.write("## Enhance your low light dsaimage12321")
-from models_x import *
+
+# from models_x import *
 st.set_page_config(layout="wide", page_title="Low Light Image Enhancement")
 st.write("## Enhance your low light dsaimageh121")
 
-# import torch.nn as nn
-# import torch.nn.functional as F
-# import torchvision.models as models
-# import torchvision.transforms as transforms
-# from torch.autograd import Variable
-# import torch
-# import numpy as np
-# import math
-# import trilinear
+import torch.nn as nn
+import torch.nn.functional as F
+import torchvision.models as models
+import torchvision.transforms as transforms
+from torch.autograd import Variable
+import torch
+import numpy as np
+import math
+import trilinear
 
-# def weights_init_normal_classifier(m):
-#     classname = m.__class__.__name__
-#     if classname.find("Conv") != -1:
-#         torch.nn.init.xavier_normal_(m.weight.data)
+def weights_init_normal_classifier(m):
+    classname = m.__class__.__name__
+    if classname.find("Conv") != -1:
+        torch.nn.init.xavier_normal_(m.weight.data)
 
-#     elif classname.find("BatchNorm2d") != -1 or classname.find("InstanceNorm2d") != -1:
-#         torch.nn.init.normal_(m.weight.data, 1.0, 0.02)
-#         torch.nn.init.constant_(m.bias.data, 0.0)
-
-
-# ##############################
-# #        Discriminator
-# ##############################
+    elif classname.find("BatchNorm2d") != -1 or classname.find("InstanceNorm2d") != -1:
+        torch.nn.init.normal_(m.weight.data, 1.0, 0.02)
+        torch.nn.init.constant_(m.bias.data, 0.0)
 
 
-# def discriminator_block(in_filters, out_filters, normalization=False):
-#     """Returns downsampling layers of each discriminator block"""
-#     layers = [nn.Conv2d(in_filters, out_filters, 3, stride=2, padding=1)]
-#     layers.append(nn.LeakyReLU(0.2))
-#     if normalization:
-#         layers.append(nn.InstanceNorm2d(out_filters, affine=True))
-#         #layers.append(nn.BatchNorm2d(out_filters))
+##############################
+#        Discriminator
+##############################
 
-#     return layers
+def discriminator_block(in_filters, out_filters, normalization=False):
+    """Returns downsampling layers of each discriminator block"""
+    layers = [nn.Conv2d(in_filters, out_filters, 3, stride=2, padding=1)]
+    layers.append(nn.LeakyReLU(0.2))
+    if normalization:
+        layers.append(nn.InstanceNorm2d(out_filters, affine=True))
+        #layers.append(nn.BatchNorm2d(out_filters))
 
-# class Classifier(nn.Module):
-#     def __init__(self, in_channels=3):
-#         super(Classifier, self).__init__()
+    return layers
 
-#         self.model = nn.Sequential(
-#             nn.Upsample(size=(256,256),mode='bilinear'),
-#             nn.Conv2d(3, 16, 3, stride=2, padding=1),
-#             nn.LeakyReLU(0.2),
-#             nn.InstanceNorm2d(16, affine=True),
-#             *discriminator_block(16, 32, normalization=True),
-#             *discriminator_block(32, 64, normalization=True),
-#             *discriminator_block(64, 128, normalization=True),
-#             *discriminator_block(128, 128),
-#             #*discriminator_block(128, 128, normalization=True),
-#             nn.Dropout(p=0.5),
-#             nn.Conv2d(128, 3, 8, padding=0),
-#         )
+class Classifier(nn.Module):
+    def __init__(self, in_channels=3):
+        super(Classifier, self).__init__()
 
-#     def forward(self, img_input):
-#         return self.model(img_input)
+        self.model = nn.Sequential(
+            nn.Upsample(size=(256,256),mode='bilinear'),
+            nn.Conv2d(3, 16, 3, stride=2, padding=1),
+            nn.LeakyReLU(0.2),
+            nn.InstanceNorm2d(16, affine=True),
+            *discriminator_block(16, 32, normalization=True),
+            *discriminator_block(32, 64, normalization=True),
+            *discriminator_block(64, 128, normalization=True),
+            *discriminator_block(128, 128),
+            #*discriminator_block(128, 128, normalization=True),
+            nn.Dropout(p=0.5),
+            nn.Conv2d(128, 3, 8, padding=0),
+        )
+
+    def forward(self, img_input):
+        return self.model(img_input)
 
 
-# class TrilinearInterpolationFunction(torch.autograd.Function):
-#     @staticmethod
-#     def forward(ctx, lut, x):
-#         x = x.contiguous()
+class TrilinearInterpolationFunction(torch.autograd.Function):
+    @staticmethod
+    def forward(ctx, lut, x):
+        x = x.contiguous()
 
-#         output = x.new(x.size())
-#         dim = lut.size()[-1]
-#         shift = dim ** 3
-#         binsize = 1.000001 / (dim-1)
-#         W = x.size(2)
-#         H = x.size(3)
-#         batch = x.size(0)
+        output = x.new(x.size())
+        dim = lut.size()[-1]
+        shift = dim ** 3
+        binsize = 1.000001 / (dim-1)
+        W = x.size(2)
+        H = x.size(3)
+        batch = x.size(0)
         
-#         assert 1 == trilinear.forward(lut, 
-#                                       x, 
-#                                       output,
-#                                       dim, 
-#                                       shift, 
-#                                       binsize, 
-#                                       W, 
-#                                       H, 
-#                                       batch)
+        assert 1 == trilinear.forward(lut, 
+                                      x, 
+                                      output,
+                                      dim, 
+                                      shift, 
+                                      binsize, 
+                                      W, 
+                                      H, 
+                                      batch)
 
-#         int_package = torch.IntTensor([dim, shift, W, H, batch])
-#         float_package = torch.FloatTensor([binsize])
-#         variables = [lut, x, int_package, float_package]
+        int_package = torch.IntTensor([dim, shift, W, H, batch])
+        float_package = torch.FloatTensor([binsize])
+        variables = [lut, x, int_package, float_package]
         
-#         ctx.save_for_backward(*variables)
+        ctx.save_for_backward(*variables)
         
-#         return lut, output
+        return lut, output
     
-#     @staticmethod
-#     def backward(ctx, lut_grad, x_grad):
+    @staticmethod
+    def backward(ctx, lut_grad, x_grad):
         
-#         lut, x, int_package, float_package = ctx.saved_variables
-#         dim, shift, W, H, batch = int_package
-#         dim, shift, W, H, batch = int(dim), int(shift), int(W), int(H), int(batch)
-#         binsize = float(float_package[0])
+        lut, x, int_package, float_package = ctx.saved_variables
+        dim, shift, W, H, batch = int_package
+        dim, shift, W, H, batch = int(dim), int(shift), int(W), int(H), int(batch)
+        binsize = float(float_package[0])
             
-#         assert 1 == trilinear.backward(x, 
-#                                        x_grad, 
-#                                        lut_grad,
-#                                        dim, 
-#                                        shift, 
-#                                        binsize, 
-#                                        W, 
-#                                        H, 
-#                                        batch)
-#         return lut_grad, x_grad
+        assert 1 == trilinear.backward(x, 
+                                       x_grad, 
+                                       lut_grad,
+                                       dim, 
+                                       shift, 
+                                       binsize, 
+                                       W, 
+                                       H, 
+                                       batch)
+        return lut_grad, x_grad
 
 
-# class TrilinearInterpolation(torch.nn.Module):
-#     def __init__(self):
-#         super(TrilinearInterpolation, self).__init__()
+class TrilinearInterpolation(torch.nn.Module):
+    def __init__(self):
+        super(TrilinearInterpolation, self).__init__()
 
-#     def forward(self, lut, x):
-#         return TrilinearInterpolationFunction.apply(lut, x)
+    def forward(self, lut, x):
+        return TrilinearInterpolationFunction.apply(lut, x)
 
+st.set_page_config(layout="wide", page_title="Low Light Image Enhancement")
+st.write("## Enhance your low light ds211")
 from datasets import *
 
 
