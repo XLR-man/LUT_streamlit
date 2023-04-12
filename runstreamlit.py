@@ -22,7 +22,10 @@ st.write(
     ":dog: Try uploading an image to watch the enhanced image. Full quality images can be downloaded from the sidebar.:grin:"
 )
 st.sidebar.write("## Upload and download :gear:")
-
+st.write("## Enhance your low light image")
+st.write(
+    ":dog: Try uploading an image to watch the enhanced image. Full quality images can be downloaded from the sidebar.:grin:"
+)
 
 # # Download the fixed image
 # def convert_image(img):
