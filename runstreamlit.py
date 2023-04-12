@@ -18,7 +18,9 @@ import torch.nn.functional as F
 
 from models_x import *
 from datasets import *
+st.set_page_config(layout="wide", page_title="Low Light Image Enhancement")
 
+st.write("## Enhance your low light image")
 
 epoch = 210
 dataset_name = "fiveK"
