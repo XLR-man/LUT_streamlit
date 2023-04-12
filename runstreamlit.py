@@ -1,3 +1,13 @@
+import subprocess
+import sys
+import torch
+
+if torch.cuda.is_available():
+    print('Including CUDA code.')
+    subprocess.check_call([sys.executable, 'setup.py', 'install'])
+else:
+    print('NO CUDA is found. Fall back to CPU.')
+ 
 import streamlit as st
 import image_adaptive_lut_evaluation
 import evaluation_LOL
