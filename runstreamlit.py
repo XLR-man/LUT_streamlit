@@ -30,7 +30,10 @@ else:
     setup(name='trilinear',
         ext_modules=[CppExtension('trilinear', ['src/trilinear.cpp'])],
         cmdclass={'build_ext': BuildExtension})
-    
+
+st.set_page_config(layout="wide", page_title="Low Light Image Enhancement")
+
+st.write("## Enhance your low light dsaimageh")
 import streamlit as st
 # import image_adaptive_lut_evaluation
 import time
