@@ -1,4 +1,3 @@
-import argparse
 import time
 
 from torchvision.utils import save_image
@@ -9,13 +8,12 @@ from models_x import *
 from datasets import *
 
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--epoch", type=int, default=210, help="epoch to load the saved checkpoint")
-parser.add_argument("--dataset_name", type=str, default="fiveK", help="name of the dataset")
-parser.add_argument("--input_color_space", type=str, default="sRGB", help="input color space: sRGB or XYZ")
-parser.add_argument("--model_dir", type=str, default="LUTs/paired/fiveK_480p_3LUT_sm_1e-4_mn_10", help="directory of saved models")
-opt = parser.parse_args()
-opt.model_dir = opt.model_dir + '_' + opt.input_color_space
+epoch = 210
+dataset_name = "fiveK"
+input_color_space ="sRGB"
+model_dir = "LUTs/paired/fiveK_480p_3LUT_sm_1e-4_mn_10"
+
+model_dir = model_dir + '_' + input_color_space
 
 # use gpu when detect cuda
 cuda = True if torch.cuda.is_available() else False
@@ -38,7 +36,7 @@ if cuda:
     criterion_pixelwise.cuda()
 
 # Load pretrained models
-LUTs = torch.load("saved_models/%s/LUTs_%d.pth" % (opt.model_dir, opt.epoch))
+LUTs = torch.load("https://github.com/XLR-man/LUT_streamlit/tree/master/saved_models/%s/LUTs_%d.pth" % (model_dir, epoch))
 LUT0.load_state_dict(LUTs["0"])
 LUT1.load_state_dict(LUTs["1"])
 LUT2.load_state_dict(LUTs["2"])
@@ -46,14 +44,14 @@ LUT2.load_state_dict(LUTs["2"])
 LUT0.eval()
 LUT1.eval()
 LUT2.eval()
-classifier.load_state_dict(torch.load("saved_models/%s/classifier_%d.pth" % (opt.model_dir, opt.epoch)))
+classifier.load_state_dict(torch.load("https://github.com/XLR-man/LUT_streamlit/tree/master/saved_models/%s/classifier_%d.pth" % (model_dir, epoch)))
 classifier.eval()
 
 def generator(img):
 
     pred = classifier(img).squeeze()
     print("weight:",pred)
-    LUT = pred[0] * LUT0.LUT + pred[1] * LUT1.LUT + pred[2] * LUT2.LUT #+ pred[3] * LUT3.LUT + pred[4] * LUT4.LUT
+    LUT = pred[0] * LUT0.LUT + pred[1] * LUT1.LUT + pred[2] * LUT2.LUT
 
     combine_A = img.new(img.size())
     _, combine_A = trilinear_(LUT,img)
@@ -62,7 +60,7 @@ def generator(img):
 
 def runforstreamlit(image):
 
-    out_dir = "test_images/%s_%d" % (opt.model_dir, opt.epoch)
+    out_dir = "https://github.com/XLR-man/LUT_streamlit/tree/master/test_images/%s_%d" % (model_dir, epoch)
     os.makedirs(out_dir, exist_ok=True)
 
     # Load the image
