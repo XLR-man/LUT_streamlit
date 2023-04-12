@@ -9,7 +9,7 @@ else:
     print('NO CUDA is found. Fall back to CPU.')
  
 import streamlit as st
-# import image_adaptive_lut_evaluation
+import image_adaptive_lut_evaluation
 # import evaluation_LOL
 from PIL import Image
 from io import BytesIO
