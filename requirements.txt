@@ -6,4 +6,3 @@ torch
 torchvision
 opencv-python
 setuptools
-sys
