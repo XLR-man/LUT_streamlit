@@ -15,17 +15,12 @@ import time
 from torchvision.utils import save_image
 from torch.utils.data import DataLoader
 import torch.nn.functional as F
-st.set_page_config(layout="wide", page_title="Low Light Image Enhancement")
 
-st.write("## Enhance your low light image")
 from models_x import *
-st.set_page_config(layout="wide", page_title="Low Light Image Enhancement")
-
-st.write("## Enhance your low light image")
 from datasets import *
 st.set_page_config(layout="wide", page_title="Low Light Image Enhancement")
 
-st.write("## Enhance your low light image")
+st.write("## Enhance your low light imagehhhhhhh")
 
 epoch = 210
 dataset_name = "fiveK"
