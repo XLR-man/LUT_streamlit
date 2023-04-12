@@ -11,9 +11,9 @@ else:
 import streamlit as st
 # import image_adaptive_lut_evaluation
 # import evaluation_LOL
-# from PIL import Image
-# from io import BytesIO
-# import base64
+from PIL import Image
+from io import BytesIO
+import base64
 
 st.set_page_config(layout="wide", page_title="Low Light Image Enhancement")
 
